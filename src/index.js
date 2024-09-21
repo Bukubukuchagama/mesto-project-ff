@@ -2,19 +2,19 @@ import "./pages/index.css";
 import { initialCards } from "./components/cards.js";
 import { openModal, closeModal } from "./components/modal.js";
 import { createCard, deleteCard, likeCard } from "./components/card.js";
-
-// DOM узлы
-const popup = document.querySelectorAll(".popup");
-const placesList = document.querySelector(".places__list");
-const editProfileButton = document.querySelector(".profile__edit-button");
-const addProfileButton = document.querySelector(".profile__add-button");
-const popupTypeEdit = document.querySelector(".popup_type_edit");
-const popupTypeImage = document.querySelector(".popup_type_image");
-const nameInput = document.querySelector(".popup__input_type_name");
-const jobInput = document.querySelector(".popup__input_type_description");
-const popupNewCard = document.querySelector(".popup_type_new-card");
-const popupImage = document.querySelector(".popup__image");
-const popupCaption = document.querySelector(".popup__caption");
+import {
+  popups,
+  placesList,
+  editProfileButton,
+  addProfileButton,
+  popupTypeEdit,
+  popupTypeImage,
+  nameInput,
+  jobInput,
+  popupNewCard,
+  popupImage,
+  popupCaption,
+} from "./components/constants.js";
 
 // Вывести карточки на страницу
 initialCards.forEach((card) => {
@@ -40,17 +40,35 @@ editProfileButton.addEventListener("click", () => {
   openModal(popupTypeEdit);
 });
 
-// Функции обработчика закрытия модального 
-popup.forEach((popup) => {
-  const closeButton = popup.querySelector(".popup__close");
-  closeButton.addEventListener("click", () => {
-    closeModal(popup);
-  });
-});
+// Функции обработчика закрытия модального
 
-popup.forEach((popup) => {
-  popup.addEventListener("mousedown", (evt) => {
-    if (evt.target.classList.contains("popup")) {
+// изначальная версия
+
+// popups.forEach((popup) => {
+//   const closeButton = popup.querySelector(".popup__close");
+//   closeButton.addEventListener("click", () => {
+//     closeModal(popup);
+//   });
+// });
+
+// popups.forEach((popup) => {
+//   popup.addEventListener("mousedown", (evt) => {
+//     if (evt.target.classList.contains("popup")) {
+//       closeModal(popup);
+//     }
+//   });
+// });
+
+// улучшения от ревьюера "как можно объединить обработчики нажатия на крестик и на оверлей"
+popups.forEach((popup) => {
+  popup.addEventListener("click", (evt) => {
+    //Благодаря всплытию при клике на крестик мы поймаем событие на элементе попапа.
+    //Проверяем что кликнули на оверлей или на крестик.
+    if (
+      evt.target === evt.currentTarget ||
+      evt.target.classList.contains("popup__close")
+    ) {
+      //В currentTarget у нас всегда будет элемент на котором мы поймали событие, т.е. попап.
       closeModal(popup);
     }
   });
@@ -58,15 +76,13 @@ popup.forEach((popup) => {
 
 // Обработчик события submit при отправке формы
 const profileTitle = document.querySelector(".profile__title");
-const profileDescription = document.querySelector(
-  ".profile__description"
-);
+const profileDescription = document.querySelector(".profile__description");
 
 function handleFormSubmit(evt) {
   evt.preventDefault();
   const nameValue = nameInput.value;
   const jobValue = jobInput.value;
-  
+
   profileTitle.textContent = nameValue;
   profileDescription.textContent = jobValue;
 
